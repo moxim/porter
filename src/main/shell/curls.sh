@@ -21,7 +21,7 @@ doTheFunkyStuff() {
 checkPorts() {
   local result=0
 
-  allPorts=(80 9 443 3000 3443 4000 4001 4200 4201 5080 5601 6080 8080 9200 9990)
+  allPorts=(80 443 3000 3443 4000 4001 4200 4201 5080 5601 6080 8080 9200 9990)
 
   for port in ${allPorts[@]} ; do
     echo -n "Checking port $port: "
@@ -34,7 +34,6 @@ checkPorts() {
 
 checkPorts
 result=$?
-echo $result
 
 if [ "X$result" != "X0" ]; then
   echo Not all ports are reachable.

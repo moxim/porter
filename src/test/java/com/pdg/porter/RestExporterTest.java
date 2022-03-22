@@ -10,13 +10,12 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(RestExporter.class)
+@WebMvcTest(controllers = {RestExporter.class})
 class RestExporterTest {
 
     @Autowired
@@ -37,20 +36,20 @@ class RestExporterTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        Integer testCount = Integer.valueOf(content);
+        int testCount = Integer.parseInt(content);
         System.out.println(content);
 
         mvc.perform(get("/count")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk()).
-                andExpect(content().string(testCount.toString()));
+                andExpect(content().string(Integer.toString(testCount)));
 
         testCount++;
         mvc.perform(get("/kuckuck"));
         mvc.perform(get("/count")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string(testCount.toString()));
+                .andExpect(content().string(Integer.toString(testCount)));
 
         testCount++;
         mvc.perform(get("/kuckuck"));
@@ -58,7 +57,7 @@ class RestExporterTest {
         mvc.perform(get("/count")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string(testCount.toString()));
+                .andExpect(content().string(Integer.toString(testCount)));
     }
 
     @org.junit.jupiter.api.Test
@@ -81,7 +80,7 @@ class RestExporterTest {
         contentAsString = response.getContentAsString().replace('"', ' ').trim();
         Instant newParsed = Instant.parse(contentAsString);
 
-        assertTrue(newParsed.equals(parsed));
+        assertEquals(parsed, newParsed);
 
         mvc.perform(get("/count"));
         resultActions = mvc.perform(get("/last"));
@@ -90,7 +89,7 @@ class RestExporterTest {
         contentAsString = response.getContentAsString().replace('"', ' ').trim();
         newParsed = Instant.parse(contentAsString);
 
-        assertTrue(newParsed.equals(parsed));
+        assertEquals(parsed, newParsed);
 
         mvc.perform(get("/kuckuck"));
         resultActions = mvc.perform(get("/last"));
@@ -99,7 +98,7 @@ class RestExporterTest {
         contentAsString = response.getContentAsString().replace('"', ' ').trim();
         newParsed = Instant.parse(contentAsString);
 
-        assertFalse(newParsed.equals(parsed));
+        assertNotEquals(parsed, newParsed);
 
         mvc.perform(get("/count"));
         resultActions = mvc.perform(get("/last"));
@@ -108,6 +107,6 @@ class RestExporterTest {
         contentAsString = response.getContentAsString().replace('"', ' ').trim();
         Instant anotherNewParsed = Instant.parse(contentAsString);
 
-        assertTrue(anotherNewParsed.equals(newParsed));
+        assertEquals(newParsed, anotherNewParsed);
     }
 }
